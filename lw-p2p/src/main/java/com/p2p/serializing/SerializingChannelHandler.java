@@ -1,0 +1,57 @@
+package com.p2p.serializing;
+
+import java.net.SocketAddress;
+
+import com.backends.RawMessage;
+import com.backends.MessageRequest;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPromise;
+
+public class SerializingChannelHandler extends ChannelDuplexHandler{
+
+	private SerializingTable serialTable;
+	
+	public SerializingChannelHandler(SerializingTable table){
+		serialTable = table;
+	}
+
+	
+	/*CHANNEL OUTBOUND HANDLER*******************************************************/
+	
+	@Override
+	public void write(ChannelHandlerContext ctx, Object msg,
+			ChannelPromise promise) throws Exception {
+		MessageRequest request = (MessageRequest) msg;
+		ByteBuf buffer = request.getBuffer();
+		for(Object o : request.requests())
+			if(serialTable.canWrite(o))
+				serialTable.write(buffer, o);
+		
+		super.write(ctx, request, promise);
+	}
+
+	
+	/*CHANNEL INBOUND HANDLER********************************************************/
+	
+	
+	@Override
+	public void channelRead(ChannelHandlerContext ctx, Object msg)
+			throws Exception {
+		RawMessage message = (RawMessage) msg;
+		ByteBuf buffer = message.getBuffer();
+		
+		while(serialTable.canRead(buffer))
+			super.channelRead(ctx, serialTable.readNext(buffer, message.getInfo()));
+		
+	}
+	
+	@Override
+	public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+		// TODO Auto-generated method stub
+		super.channelReadComplete(ctx);
+	}
+	
+}
