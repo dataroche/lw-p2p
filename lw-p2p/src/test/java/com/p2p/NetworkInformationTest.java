@@ -1,8 +1,8 @@
 package com.p2p;
 
-import nativeMessages.Password;
-
 import org.junit.Test;
+
+import com.nativeMessages.Password;
 
 import static org.junit.Assert.*;
 

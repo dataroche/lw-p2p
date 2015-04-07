@@ -1,4 +1,4 @@
-package nativeSerializers;
+package com.nativeSerializers;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;

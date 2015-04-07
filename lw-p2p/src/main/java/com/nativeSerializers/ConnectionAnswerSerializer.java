@@ -1,10 +1,10 @@
-package nativeSerializers;
+package com.nativeSerializers;
 
-import nativeMessages.ConnectionAnswer;
-import nativeMessages.ConnectionAnswer.Answer;
 import io.netty.buffer.ByteBuf;
 
 import com.backends.id.SocketId;
+import com.nativeMessages.ConnectionAnswer;
+import com.nativeMessages.ConnectionAnswer.Answer;
 import com.p2p.serializing.NetworkSerializer;
 import com.p2p.serializing.SerializingTable;
 

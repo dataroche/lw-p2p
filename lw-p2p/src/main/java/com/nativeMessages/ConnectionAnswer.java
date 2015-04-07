@@ -1,4 +1,4 @@
-package nativeMessages;
+package com.nativeMessages;
 
 import java.util.List;
 

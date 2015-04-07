@@ -1,9 +1,9 @@
-package nativeSerializers;
+package com.nativeSerializers;
 
-import nativeMessages.ConnectionAttempt;
-import nativeMessages.Password;
 import io.netty.buffer.ByteBuf;
 
+import com.nativeMessages.ConnectionAttempt;
+import com.nativeMessages.Password;
 import com.p2p.serializing.NetworkSerializer;
 import com.p2p.serializing.SerializingTable;
 

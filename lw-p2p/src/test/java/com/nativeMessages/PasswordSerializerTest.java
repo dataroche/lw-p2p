@@ -1,11 +1,13 @@
-package nativeMessages;
+package com.nativeMessages;
 
 import static org.junit.Assert.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import nativeSerializers.PasswordSerializer;
 
 import org.junit.Test;
+
+import com.nativeMessages.Password;
+import com.nativeSerializers.PasswordSerializer;
 
 public class PasswordSerializerTest {
 

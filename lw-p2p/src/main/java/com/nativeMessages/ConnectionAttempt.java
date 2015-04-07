@@ -1,4 +1,4 @@
-package nativeMessages;
+package com.nativeMessages;
 
 /**First message sent by the client attempting connection to one of the peer's server.
  * 

@@ -1,10 +1,10 @@
 package com.p2p.serializing;
 
-import nativeSerializers.ConnectionAnswerSerializer;
-import nativeSerializers.ConnectionAttemptSerializer;
-import nativeSerializers.PasswordSerializer;
-import nativeSerializers.SocketIdSerializer;
-import nativeSerializers.StringSerializer;
+import com.nativeSerializers.ConnectionAnswerSerializer;
+import com.nativeSerializers.ConnectionAttemptSerializer;
+import com.nativeSerializers.PasswordSerializer;
+import com.nativeSerializers.SocketIdSerializer;
+import com.nativeSerializers.StringSerializer;
 
 public class SerializingTableBuilder {
 	public static SerializingTable newEmptyTable(){

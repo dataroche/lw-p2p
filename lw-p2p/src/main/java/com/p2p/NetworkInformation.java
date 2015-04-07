@@ -1,6 +1,6 @@
 package com.p2p;
 
-import nativeMessages.Password;
+import com.nativeMessages.Password;
 
 public class NetworkInformation {
 	
