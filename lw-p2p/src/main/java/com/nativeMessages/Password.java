@@ -4,6 +4,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Password {
+	public static final byte[] EMPTY_HASH = new byte[]{0};
+	
 	byte[] hash;
 	
 	public Password(){
@@ -42,7 +44,7 @@ public class Password {
 	}
 	
 	private void setEmptyPassword(){
-		hash = new byte[]{0};
+		hash = EMPTY_HASH;
 	}
 	
 	public boolean isEmptyPassword(){
