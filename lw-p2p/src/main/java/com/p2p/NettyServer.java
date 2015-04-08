@@ -1,7 +1,11 @@
-package com.backends;
+package com.p2p;
 
+import com.backends.ServerBossChannelInitializer;
+import com.backends.ServerChannelInitializer;
+import com.backends.UdpChannelInitializer;
+import com.backends.id.SocketId;
 import com.backends.id.SocketIdTable;
-import com.p2p.P2PChannelInitializer;
+import com.nativeMessages.Password;
 import com.p2p.serializing.SerializingTable;
 
 import io.netty.bootstrap.Bootstrap;
@@ -28,21 +32,25 @@ public class NettyServer implements ChannelFutureListener{
 	private NioEventLoopGroup udpGroup;
 	
 	private SerializingTable serialTable;
+	private P2PNetwork network;
 	
 	private SocketIdTable idTable;
 	private short localId;
+	private short nextAssignableId;
 	
 	private P2PChannelInitializer channelInit;
 	
-	public NettyServer(int port, short localId, SerializingTable serialTable){
+	public NettyServer(P2PNetwork network, int port, SerializingTable serialTable){
 		bossGroup = new NioEventLoopGroup();
 		workerGroup = new NioEventLoopGroup();
 		udpGroup = new NioEventLoopGroup();
 		
 		this.serialTable = serialTable;
+		this.network = network;
 		channelInit = new P2PChannelInitializer(localId, serialTable);
 		idTable = new SocketIdTable();
-		this.localId = localId;
+		this.localId = -1;
+		this.nextAssignableId = -1;
 		
 		initServer(port);
 		port++;
@@ -54,7 +62,7 @@ public class NettyServer implements ChannelFutureListener{
 		bootstrap.group(bossGroup, workerGroup)
 		.channel(NioServerSocketChannel.class)
 		.handler(new ServerBossChannelInitializer())
-		.childHandler(new ServerChannelInitializer(idTable, channelInit))
+		.childHandler(new ServerChannelInitializer(idTable, this, channelInit))
 		.bind(port);
 	}
 	
@@ -68,6 +76,18 @@ public class NettyServer implements ChannelFutureListener{
 		
 		bootstrap.bind(port).addListener(this);
 		
+	}
+	
+	public boolean attemptConnect(SocketId id, Password password){
+		boolean canConnect = network.getNetworkInfo().canConnect(password);
+		if(!canConnect)
+			return false;
+		assert (localId < 0); // local id should be defined
+			
+		idTable.identify(id.getTcpAddress(), nextAssignableId++ , id.getTcpAddress().getPort() + 1);
+		Peer peer = new Peer(id);
+		peer.connect(network);
+		return true;
 	}
 
 	public void operationComplete(ChannelFuture future) throws Exception {

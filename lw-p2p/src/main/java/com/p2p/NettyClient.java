@@ -1,4 +1,4 @@
-package com.backends;
+package com.p2p;
 
 public class NettyClient {
 

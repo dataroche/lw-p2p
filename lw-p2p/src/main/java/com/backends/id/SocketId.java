@@ -5,6 +5,8 @@ import java.net.InetSocketAddress;
 
 public class SocketId {
 	public static enum Status{UNRESOLVED, IDENTIFY_PENDING, IDENTIFIED}
+	
+	long addedTimeStamp;
 	Status idStatus;
 	String name;
 	short clientId;
@@ -39,6 +41,10 @@ public class SocketId {
 
 	public InetSocketAddress getTcpAddress() {
 		return tcpAddress;
+	}
+	
+	public long getAddedTimeStamp(){
+		return addedTimeStamp;
 	}
 	
 	public boolean isIdentified(){

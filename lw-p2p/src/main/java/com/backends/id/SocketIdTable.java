@@ -33,6 +33,7 @@ public class SocketIdTable {
 		SocketId id = idMap.get(address);
 		if(id == null){
 			id = new SocketId((short) -999, address.getAddress(), address.getPort(), 0);
+			id.addedTimeStamp = System.currentTimeMillis();
 			id.idStatus = Status.UNRESOLVED;
 			idMap.put(address, id);
 		}
@@ -45,13 +46,16 @@ public class SocketIdTable {
 		SocketId id = idMap.get(address);
 		
 		if(id == null){
-			addMapping(new SocketId(assignedId, address.getAddress(), address.getPort(), udpPort));
+			id = new SocketId(assignedId, address.getAddress(), address.getPort(), udpPort);
+			id.addedTimeStamp = System.currentTimeMillis();
+			
 		}
 		else{
 			id.clientId = assignedId;
 			id.udpAddress = new InetSocketAddress(address.getAddress(), udpPort);
-			addMapping(id);
+			
 		}
+		addMapping(id);
 		id.idStatus = Status.IDENTIFIED;
 	}
 	

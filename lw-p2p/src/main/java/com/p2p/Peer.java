@@ -17,11 +17,22 @@ public class Peer {
 	private SocketId id;
 	private boolean local;
 	
+	public Peer(SocketId id){
+		this.id = id;
+		connected = false;
+		local = false;
+	}
+	
 	public Peer(InetAddress address, int port){
 		tempAddress = address;
 		tempPort = port;
 		connected = false;
 		local = false;
+	}
+	
+	void connect(P2PNetwork network){
+		associatedNetwork = network;
+		network.addPeer(this);
 	}
 	
 	void connect(P2PNetwork network, short assignedID, boolean localPeer){

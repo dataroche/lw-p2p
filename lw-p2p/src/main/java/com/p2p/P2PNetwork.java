@@ -3,6 +3,8 @@ package com.p2p;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.backends.id.SocketId;
+import com.nativeMessages.Password;
 import com.p2p.serializing.SerializingTable;
 
 
@@ -50,7 +52,10 @@ public class P2PNetwork {
 		
 	}
 	
-	public boolean connect()
+	void addPeer(Peer peer){
+		info.addPeer();
+		connectedPeers.add(peer);
+	}
 	
 	public NetworkInformation getNetworkInfo(){
 		assert info != null;
