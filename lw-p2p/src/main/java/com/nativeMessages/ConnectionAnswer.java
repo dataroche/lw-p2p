@@ -3,6 +3,7 @@ package com.nativeMessages;
 import java.util.List;
 
 import com.backends.id.SocketId;
+import com.p2p.NetworkInformation;
 import com.p2p.Peer;
 import com.sun.org.apache.bcel.internal.generic.RETURN;
 
@@ -20,6 +21,7 @@ public class ConnectionAnswer {
 	}
 	
 	private SocketId[] peerIds;
+	private NetworkInformation info;
 	private Answer answer;
 	
 	public ConnectionAnswer(Answer answer){
@@ -35,6 +37,14 @@ public class ConnectionAnswer {
 		for(int i = 0; i < peers.size(); i++){
 			this.peerIds[i] = peers.get(i).getSocketId();
 		}
+	}
+	
+	public void setNetworkInformation(NetworkInformation info){
+		this.info = info;
+	}
+	
+	public NetworkInformation getNetworkInformation(){
+		return info;
 	}
 	
 	public Answer getAnswer(){

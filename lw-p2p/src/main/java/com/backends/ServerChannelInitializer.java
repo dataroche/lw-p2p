@@ -23,7 +23,7 @@ public class ServerChannelInitializer extends ChannelInitializer<NioServerSocket
 		
 		
 		init.init(ch);
-		//pipeline.addLast(tcpPacketHandler);
+		ch.pipeline().addLast(new TcpPacketHandler(idTable));
 	}
 
 }

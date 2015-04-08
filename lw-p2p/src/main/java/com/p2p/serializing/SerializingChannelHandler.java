@@ -44,8 +44,9 @@ public class SerializingChannelHandler extends ChannelDuplexHandler{
 		ByteBuf buffer = message.getBuffer();
 		
 		while(serialTable.canRead(buffer))
-			super.channelRead(ctx, serialTable.readNext(buffer, message.getInfo()));
+			message.addObject(serialTable.readNext(buffer, message.getInfo()));
 		
+		super.channelRead(ctx, message);
 	}
 	
 	@Override

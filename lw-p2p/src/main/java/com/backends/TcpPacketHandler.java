@@ -36,7 +36,6 @@ public class TcpPacketHandler extends ChannelDuplexHandler{
 	public void write(ChannelHandlerContext ctx, Object msg,
 			ChannelPromise promise) throws Exception {
 		MessageRequest request = (MessageRequest) msg;
-		short thisId = request.getClientID();
 		
 		for(short destinationIds: request.getDestinationIDs()){
 			

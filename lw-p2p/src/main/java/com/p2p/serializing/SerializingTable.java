@@ -8,7 +8,7 @@ import com.backends.MessageInfo;
 
 /**
  * A table of serializers. Keeps track of opcodes and assures their uniqueness. 
- * Used to write and read any object, as long as a correct serializer is present.
+ * Used to write and read any object to a ByteBuf stream, as long as a correct serializer is present.
  * 
  * <p>
  * Default serializable objects (Use {@link SerializingTableBuilder} ):<br>
@@ -17,6 +17,7 @@ import com.backends.MessageInfo;
  * {@link SocketId}<br>
  * {@link ConnectionAttempt}<br>
  * {@link ConnectionAnswer}<br>
+ * {@link NetworkInformation}<br>
  * 
  * @author William Laroche
  *

@@ -4,6 +4,8 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.backends.id.SocketId.Status;
+
 
 public class SocketIdTable {
 	private Map<Short, SocketId> addressMap;
@@ -28,7 +30,29 @@ public class SocketIdTable {
 	}
 	
 	public SocketId getID(InetSocketAddress address){
-		return idMap.get(address);
+		SocketId id = idMap.get(address);
+		if(id == null){
+			id = new SocketId((short) -999, address.getAddress(), address.getPort(), 0);
+			id.idStatus = Status.UNRESOLVED;
+			idMap.put(address, id);
+		}
+			
+			
+		return id;
+	}
+	
+	public void identify(InetSocketAddress address, short assignedId, int udpPort){
+		SocketId id = idMap.get(address);
+		
+		if(id == null){
+			addMapping(new SocketId(assignedId, address.getAddress(), address.getPort(), udpPort));
+		}
+		else{
+			id.clientId = assignedId;
+			id.udpAddress = new InetSocketAddress(address.getAddress(), udpPort);
+			addMapping(id);
+		}
+		id.idStatus = Status.IDENTIFIED;
 	}
 	
 	

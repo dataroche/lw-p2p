@@ -4,10 +4,12 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 public class SocketId {
-	private String name;
-	private short clientId;
-	private InetSocketAddress udpAddress;
-	private InetSocketAddress tcpAddress;
+	public static enum Status{UNRESOLVED, IDENTIFY_PENDING, IDENTIFIED}
+	Status idStatus;
+	String name;
+	short clientId;
+	InetSocketAddress udpAddress;
+	InetSocketAddress tcpAddress;
 	
 	public SocketId(short id, InetAddress ipAddress, int tcpPort, int udpPort){
 		name = "" + clientId;
@@ -37,6 +39,10 @@ public class SocketId {
 
 	public InetSocketAddress getTcpAddress() {
 		return tcpAddress;
+	}
+	
+	public boolean isIdentified(){
+		return idStatus.equals(Status.IDENTIFIED);
 	}
 	
 	@Override

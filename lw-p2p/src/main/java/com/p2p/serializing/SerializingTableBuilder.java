@@ -5,6 +5,7 @@ import com.nativeSerializers.ConnectionAttemptSerializer;
 import com.nativeSerializers.PasswordSerializer;
 import com.nativeSerializers.SocketIdSerializer;
 import com.nativeSerializers.StringSerializer;
+import com.p2p.NetworkInformationSerializer;
 
 public class SerializingTableBuilder {
 	public static SerializingTable newEmptyTable(){
@@ -22,6 +23,7 @@ public class SerializingTableBuilder {
 		table.addSerializer(new PasswordSerializer());
 		table.addSerializer(new ConnectionAttemptSerializer());
 		table.addSerializer(new ConnectionAnswerSerializer());
+		table.addSerializer(new NetworkInformationSerializer());
 		return table;
 	}
 }

@@ -11,18 +11,11 @@ import java.util.List;
 import com.backends.MessageInfo;
 
 /**
- * Writes [ByteCount, SerializedObject]
- * 
- * Reads [ByteCount, SerializedObject]
+ * Basic Serializer for use in a SerializingTable. 
  * 
  * @author William Laroche
  *
- * @param <Item> The type of object this sserializer can serialize.
- */
-/**
- * @author William Laroche
- *
- * @param <Item>
+ * @param <Item> The type of object this serializer can serialize.
  */
 abstract public class NetworkSerializer<Item> {
 	
@@ -33,7 +26,7 @@ abstract public class NetworkSerializer<Item> {
 		private static final long serialVersionUID = -4905438496096300971L;
 
 		public ByteCountCheckException(){
-			super("Byte count check failed. The Traductor has read a "
+			super("Byte count check failed. The implemented NetworkSerializer has read a "
 					+ "different number of bytes that what was written before packet expedition.");
 		}
 	}
@@ -83,18 +76,41 @@ abstract public class NetworkSerializer<Item> {
 		}
 	}
 	
+	/**Casts the object to this Serializer's type, and calls encode(ByteBuf, Item, SerializingTable);
+	 * 
+	 * @param stream
+	 * @param object
+	 * @param table
+	 */
 	public final void encodeCast(ByteBuf stream, Object object, SerializingTable table){
 		encode(stream, (Item) object, table);
 	}
 	
+	/**Casts the object to this Serializer's type, and calls encode(ByteBuf, Item);
+	 * 
+	 * @param stream
+	 * @param object
+	 */
 	public final void encodeCast(ByteBuf stream, Object object){
 		encode(stream, (Item) object);
 	}
 	
+	/**Encodes the object into the buffer. Some serializers may not support this operation,
+	 *  since no serializing table is supplied.
+	 * 
+	 * @param stream The buffer
+	 * @param object The object.
+	 */
 	public final void encode(ByteBuf stream, Item object){
 		encode(stream, object, null);
 	}
 	
+	/**Encodes into the buffer the specified object.
+	 * 
+	 * @param stream The buffer on which to write to.
+	 * @param object The object to write.
+	 * @param table The serializing table to which this Serializer is attached.
+	 */
 	public final void encode(ByteBuf stream, Item object, SerializingTable table){
 		
 		//Reserve a short for writing byte count
@@ -141,6 +157,7 @@ abstract public class NetworkSerializer<Item> {
 	 * @warning Do not modify reader or writer indexes.
 	 * @param stream The byte stream on which to write the object.
 	 * @param object The object to write.
+	 * @param table The serializing table to write sub-objects to the stream. May be null.
 	 */
 	abstract protected void write(ByteBuf stream, Item object, SerializingTable table) throws RuntimeException;
 	
@@ -148,12 +165,13 @@ abstract public class NetworkSerializer<Item> {
 	 * @warning Do not modify reader or writer indexes.
 	 * @param stream The byte stream on which to read the object.
 	 * @param bytesToRead The number of bytes that were written for this object.
+	 * @param table The serializing table to read sub-objects from the stream. May be null.
 	 * @return The object that was read.
 	 */
 	abstract protected Item read(ByteBuf stream, int bytesToRead, SerializingTable table) throws RuntimeException;
 	
 	/**
-	 * Used to get the Object type. If this NetworkSerializer processes String objects, this MUST return String.class
+	 * Used to get the Object type. For example, if this NetworkSerializer processes String objects, this MUST return String.class
 	 * @return NetworkSerializerObject.class
 	 */
 	abstract protected Class<Item> getSerializableObjectType();

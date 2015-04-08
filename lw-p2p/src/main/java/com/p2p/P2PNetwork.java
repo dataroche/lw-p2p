@@ -50,6 +50,8 @@ public class P2PNetwork {
 		
 	}
 	
+	public boolean connect()
+	
 	public NetworkInformation getNetworkInfo(){
 		assert info != null;
 		return info;
