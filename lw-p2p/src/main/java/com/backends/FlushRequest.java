@@ -1,8 +1,12 @@
 package com.backends;
 
-public class SendingRequest {
+public class FlushRequest {
 	private short[] destinationIDs;
-	public SendingRequest(short ... destinationIDs){
+	
+	public FlushRequest(){
+	}
+	
+	public FlushRequest(short ... destinationIDs){
 		this.destinationIDs = destinationIDs;
 	}
 	

@@ -29,16 +29,14 @@ public class TcpPacketHandler extends ChannelDuplexHandler{
 		
 		InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
 		
-		super.channelRead(ctx, message);
+		ctx.fireChannelRead(message);
 	}
 	
 	@Override
 	public void write(ChannelHandlerContext ctx, Object msg,
 			ChannelPromise promise) throws Exception {
 		MessageRequest request = (MessageRequest) msg;
+		ctx.writeAndFlush(request.getBuffer());
 		
-		for(short destinationIds: request.getDestinationIDs()){
-			
-		}
 	}
 }

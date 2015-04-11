@@ -98,8 +98,8 @@ public class NettyServer{
 		return nextAssignableId;
 	}
 	
-	public void setLocalId(){
-		
+	public void setLocalId(short id){
+		idTable.identify(localId.getTcpAddress(), id, localId.getUdpAddress().getPort());
 	}
 	
 	public SocketId getThisId(){
@@ -114,7 +114,7 @@ public class NettyServer{
 			
 		idTable.identify(id.getTcpAddress(), nextAssignableId++ , id.getTcpAddress().getPort() + 1);
 		Peer peer = new Peer(id);
-		peer.connect(network);
+		peer.join(network);
 		return true;
 	}
 }

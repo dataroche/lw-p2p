@@ -24,8 +24,8 @@ public class MessagePacker extends ChannelOutboundHandlerAdapter {
 	@Override
 	public void write(ChannelHandlerContext ctx, Object msg,
 			ChannelPromise promise) throws Exception {
-		if(msg instanceof SendingRequest){
-			sendingRequest(ctx, (SendingRequest) msg, promise);
+		if(msg instanceof FlushRequest){
+			sendingRequest(ctx, (FlushRequest) msg, promise);
 		}	
 		else{
 			if(isCurrentRequestEmpty()){
@@ -36,14 +36,14 @@ public class MessagePacker extends ChannelOutboundHandlerAdapter {
 		}
 	}
 	
-	private void sendingRequest(ChannelHandlerContext ctx, SendingRequest request,
+	private void sendingRequest(ChannelHandlerContext ctx, FlushRequest request,
 			ChannelPromise promise) throws Exception, EmptyMessageRequestException{
 		if(isCurrentRequestEmpty())
 			throw new EmptyMessageRequestException();
 		
 		currentRequest.setDestinationIDs(request.getDestinationIDs());
-		super.write(ctx, currentRequest, promise);
-		super.flush(ctx);
+		ctx.writeAndFlush(currentRequest, promise);
+		
 	}
 	
 	private boolean isCurrentRequestEmpty(){

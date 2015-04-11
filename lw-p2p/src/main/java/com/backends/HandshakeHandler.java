@@ -51,6 +51,7 @@ public class HandshakeHandler extends
 			SocketId thisId = server.getThisId();
 			int s = thisId.hashCode();
 			NewConnection connection = new NewConnection(id, thisId, s, nextId);
+			ctx.write(connection);
 		}
 	}
 }

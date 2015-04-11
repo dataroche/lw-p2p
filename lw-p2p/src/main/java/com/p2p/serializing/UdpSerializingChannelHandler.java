@@ -10,11 +10,11 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 
-public class SerializingChannelHandler extends ChannelDuplexHandler{
+public class UdpSerializingChannelHandler extends ChannelDuplexHandler{
 
 	private SerializingTable serialTable;
 	
-	public SerializingChannelHandler(SerializingTable table){
+	public UdpSerializingChannelHandler(SerializingTable table){
 		serialTable = table;
 	}
 
@@ -30,7 +30,7 @@ public class SerializingChannelHandler extends ChannelDuplexHandler{
 			if(serialTable.canWrite(o))
 				serialTable.write(buffer, o);
 		
-		super.write(ctx, request, promise);
+		ctx.write(request, promise);
 	}
 
 	
@@ -46,7 +46,7 @@ public class SerializingChannelHandler extends ChannelDuplexHandler{
 		while(serialTable.canRead(buffer))
 			message.addObject(serialTable.readNext(buffer, message.getInfo()));
 		
-		super.channelRead(ctx, message);
+		ctx.fireChannelRead(message);
 	}
 	
 	@Override
