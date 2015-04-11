@@ -8,11 +8,13 @@ import io.netty.buffer.ByteBuf;
 public class MessageRequest {
 	private short clientID;
 	private short[] destinationIDs;
+	private boolean broadcast;
 	private ByteBuf buffer;
 	private List<Object> requests;
 	
 	MessageRequest(){
 		requests = new LinkedList<Object>();
+		broadcast = false;
 	}
 	
 	public MessageRequest(short ... destinationIds){
@@ -35,6 +37,14 @@ public class MessageRequest {
 	
 	public ByteBuf getBuffer(){
 		return buffer;
+	}
+	
+	void broadcast(){
+		broadcast = true;
+	}
+	
+	public boolean isBroadcast(){
+		return broadcast;
 	}
 	
 	void setDestinationIDs(short ... ids){

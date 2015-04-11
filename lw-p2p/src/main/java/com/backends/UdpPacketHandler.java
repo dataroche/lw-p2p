@@ -1,9 +1,12 @@
 package com.backends;
 
 
+import java.net.InetSocketAddress;
+
 import com.backends.id.SocketId;
 import com.backends.id.SocketIdTable;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
@@ -19,6 +22,7 @@ public class UdpPacketHandler extends ChannelDuplexHandler{
 	
 	public void channelRead(ChannelHandlerContext ctx, Object msg)
 			throws Exception {
+		
 		DatagramPacket receivedPacket = (DatagramPacket) msg;
 		RawMessage message = new RawMessage();
 		message.buffer = receivedPacket.content();
@@ -38,19 +42,45 @@ public class UdpPacketHandler extends ChannelDuplexHandler{
 	@Override
 	public void write(ChannelHandlerContext ctx, Object msg,
 			ChannelPromise promise) throws Exception {
+		if(!(msg instanceof MessageRequest)){
+			System.err.println("Warning : object which is not of type MessageRequest got to the end of the outbound pipeline.");
+			return;
+		}
+		
 		MessageRequest request = (MessageRequest) msg;
 		//Stamp the time.
 		request.getBuffer().writeLong(
 						System.currentTimeMillis());
 		
-		SocketId sender = table.getID(request.getClientID());
+		InetSocketAddress sender = table.getID(request.getClientID()).getUdpAddress();
+		ByteBuf data = request.getBuffer();
 		
-		//Send the data to all destination ids.
-		for(short id : request.getDestinationIDs()){
-			SocketId recipient = table.getID(id);
-			DatagramPacket packet = new DatagramPacket(request.getBuffer(), recipient.getUdpAddress(), sender.getUdpAddress());
-			super.write(ctx, packet, promise);
+		if(request.isBroadcast())
+			broadcast(ctx, data, sender);
+		else
+			send(ctx, data, sender, request.getDestinationIDs());
+		
+		data.release();
+	}
+	
+	private void broadcast(ChannelHandlerContext ctx, ByteBuf data, InetSocketAddress sender){
+		for(SocketId id : table.getAll()){
+			send(ctx, data, sender, id.getUdpAddress());
 		}
+		
+	}
+	
+	private void send(ChannelHandlerContext ctx, ByteBuf data, InetSocketAddress sender, short ... ids){
+		for(short id : ids){ 
+			send(ctx, data, sender, table.getID(id).getUdpAddress());
+		}
+	}
+	
+	private void send(ChannelHandlerContext ctx, ByteBuf data, InetSocketAddress sender, InetSocketAddress recipient){
+		ByteBuf copy = data.copy();
+		DatagramPacket packet = new DatagramPacket(copy, recipient, sender);
+		ctx.writeAndFlush(packet);
+		copy.release();
 	}
 
 }

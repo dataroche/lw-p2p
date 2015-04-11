@@ -25,6 +25,10 @@ public class SocketIdTable {
 		idMap.put(socket.getUdpAddress(), socket);
 	}
 	
+	public Iterable<SocketId> getAll(){
+		return addressMap.values();
+	}
+	
 	public SocketId getID(short id){
 		return addressMap.get(id);
 	}

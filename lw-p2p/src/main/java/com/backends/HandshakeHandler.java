@@ -2,6 +2,7 @@ package com.backends;
 
 import com.backends.id.SocketId;
 import com.nativeMessages.ConnectionAttempt;
+import com.nativeMessages.NewConnection;
 import com.nativeMessages.Password;
 import com.p2p.NettyServer;
 import com.p2p.P2PNetwork;
@@ -39,10 +40,17 @@ public class HandshakeHandler extends
 		}
 	}
 	
+	
+	
 	private void connectionAttempt(ChannelHandlerContext ctx, MessageInfo info, ConnectionAttempt attempt){
 		SocketId id = info.getSenderID();
 		Password passwordAttempt = attempt.getPassword();
-		// NEED SOME WAY TO CONNECT A PEER, UPDATE INFO, ADD ID TO CONNECTED ID LIST ? TODO
 		boolean connectionSuccess = server.attemptConnect(id, passwordAttempt);
+		if(connectionSuccess){
+			short nextId = server.getNextAssignableId();
+			SocketId thisId = server.getThisId();
+			int s = thisId.hashCode();
+			NewConnection connection = new NewConnection(id, thisId, s, nextId);
+		}
 	}
 }

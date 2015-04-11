@@ -1,5 +1,8 @@
 package com.p2p;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import com.backends.ServerBossChannelInitializer;
 import com.backends.ServerChannelInitializer;
 import com.backends.UdpChannelInitializer;
@@ -25,7 +28,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.oio.OioDatagramChannel;
 import io.netty.handler.logging.LoggingHandler;
 
-public class NettyServer implements ChannelFutureListener{
+public class NettyServer{
 	
 	private NioEventLoopGroup bossGroup;
 	private NioEventLoopGroup workerGroup;
@@ -33,9 +36,10 @@ public class NettyServer implements ChannelFutureListener{
 	
 	private SerializingTable serialTable;
 	private P2PNetwork network;
+	private boolean connected;
 	
 	private SocketIdTable idTable;
-	private short localId;
+	private SocketId localId;
 	private short nextAssignableId;
 	
 	private P2PChannelInitializer channelInit;
@@ -45,16 +49,24 @@ public class NettyServer implements ChannelFutureListener{
 		workerGroup = new NioEventLoopGroup();
 		udpGroup = new NioEventLoopGroup();
 		
+		connected = false;
 		this.serialTable = serialTable;
 		this.network = network;
-		channelInit = new P2PChannelInitializer(localId, serialTable);
-		idTable = new SocketIdTable();
-		this.localId = -1;
-		this.nextAssignableId = -1;
+
+		try {
+			this.localId = new SocketId(nextAssignableId++, InetAddress.getLocalHost(), port, port + 1);
+			channelInit = new P2PChannelInitializer(localId.getClientId(), serialTable);
+			idTable = new SocketIdTable();
+			this.nextAssignableId = 0;
+			
+			initServer(port);
+			port++;
+			initUdp(port);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+			System.err.println("Unable to initialize local server.");
+		}
 		
-		initServer(port);
-		port++;
-		initUdp(port);
 	}
 	
 	private void initServer(int port){
@@ -74,24 +86,35 @@ public class NettyServer implements ChannelFutureListener{
 		.option(ChannelOption.SO_BROADCAST, true)
 		.handler(new UdpChannelInitializer(idTable, channelInit));
 		
-		bootstrap.bind(port).addListener(this);
+		bootstrap.bind(port);
 		
+	}
+	
+	public void setNextAssignableId(short next){
+		nextAssignableId = next;
+	}
+	
+	public short getNextAssignableId(){
+		return nextAssignableId;
+	}
+	
+	public void setLocalId(){
+		
+	}
+	
+	public SocketId getThisId(){
+		return localId;
 	}
 	
 	public boolean attemptConnect(SocketId id, Password password){
 		boolean canConnect = network.getNetworkInfo().canConnect(password);
 		if(!canConnect)
 			return false;
-		assert (localId < 0); // local id should be defined
+		assert (connected); // local id should be defined
 			
 		idTable.identify(id.getTcpAddress(), nextAssignableId++ , id.getTcpAddress().getPort() + 1);
 		Peer peer = new Peer(id);
 		peer.connect(network);
 		return true;
-	}
-
-	public void operationComplete(ChannelFuture future) throws Exception {
-		
-		
 	}
 }
