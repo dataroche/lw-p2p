@@ -26,10 +26,8 @@ public class ServerChannelInitializer extends ChannelInitializer<NioServerSocket
 	@Override
 	protected void initChannel(NioServerSocketChannel ch) throws Exception {
 		
-		
-		
 		ch.pipeline()
-		//[I/O = ???????????????]							// 	Network layer
+		//[I/O = ByteBuf]									// 	Network layer
 		.addLast(new TcpPacketHandler(idTable))				// 	Direction:\/|/\, 
 		//[/\ = 
 		.addLast(new UdpSerializingChannelHandler(serialTable))// 	Direction:\/|/\, Serializes and deserializes objects into the buffer stream.

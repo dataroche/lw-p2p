@@ -18,6 +18,11 @@ public class SerializingTableBuilder {
 	 */
 	public static SerializingTable newDefaultTable(){
 		SerializingTable table = new SerializingTable();
+		appendRequiredSerializers(table);
+		return table;
+	}
+	
+	public static SerializingTable appendRequiredSerializers(SerializingTable table){
 		table.addSerializer(new StringSerializer());
 		table.addSerializer(new SocketIdSerializer());
 		table.addSerializer(new PasswordSerializer());

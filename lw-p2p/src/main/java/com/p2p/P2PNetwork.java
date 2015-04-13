@@ -55,6 +55,11 @@ public class P2PNetwork {
 	void addPeer(Peer peer){
 		info.addPeer();
 		connectedPeers.add(peer);
+		notifyPeerAdded(peer);
+	}
+	
+	void setNetworkInfo(NetworkInformation info){
+		this.info = info;
 	}
 	
 	public NetworkInformation getNetworkInfo(){
@@ -64,6 +69,18 @@ public class P2PNetwork {
 	
 	public Iterable<Peer> getAllConnectedPeers(){
 		return connectedPeers;
+	}
+	
+	private void notifyPeerAdded(Peer newPeer){
+		for(P2PNetworkListener listener : listeners){
+			listener.networkPeerConnected(this, newPeer);
+		}
+	}
+	
+	private void notifyPeerRemoved(Peer removedPeer){
+		for(P2PNetworkListener listener : listeners){
+			listener.networkPeerDisconnected(this, removedPeer);
+		}
 	}
 
 }

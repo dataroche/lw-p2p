@@ -1,6 +1,7 @@
 package com.backends;
 
 import com.backends.id.SocketIdTable;
+import com.p2p.NettyServer;
 import com.p2p.serializing.UdpSerializingChannelHandler;
 import com.p2p.serializing.SerializingTable;
 
@@ -14,10 +15,10 @@ public class UdpChannelInitializer extends ChannelInitializer<NioDatagramChannel
 	private SocketIdTable idTable;
 	private SerializingTable serialTable;
 	
-	public UdpChannelInitializer(short clientId, SocketIdTable idTable, SerializingTable table){
+	public UdpChannelInitializer(SocketIdTable idTable, SerializingTable serialTable, NettyServer server){
 		this.idTable = idTable;
-		this.clientId = clientId;
-		this.serialTable = table;
+		this.clientId = server.getThisId().getClientId();
+		this.serialTable = serialTable;
 	}
 	
 	@Override

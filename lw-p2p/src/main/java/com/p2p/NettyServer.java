@@ -8,12 +8,14 @@ import com.backends.ServerChannelInitializer;
 import com.backends.UdpChannelInitializer;
 import com.backends.id.SocketId;
 import com.backends.id.SocketIdTable;
+import com.nativeMessages.NewConnection;
 import com.nativeMessages.Password;
 import com.p2p.serializing.SerializingTable;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.AddressedEnvelope;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInboundHandler;
@@ -42,30 +44,27 @@ public class NettyServer{
 	private SocketId localId;
 	private short nextAssignableId;
 	
-	private P2PChannelInitializer channelInit;
+	private Channel udpChannel;
 	
-	public NettyServer(P2PNetwork network, int port, SerializingTable serialTable){
+	
+	public NettyServer(int port, SerializingTable serialTable) throws UnknownHostException{
 		bossGroup = new NioEventLoopGroup();
 		workerGroup = new NioEventLoopGroup();
 		udpGroup = new NioEventLoopGroup();
 		
+		idTable = new SocketIdTable();
 		connected = false;
 		this.serialTable = serialTable;
-		this.network = network;
 
-		try {
-			this.localId = new SocketId(nextAssignableId++, InetAddress.getLocalHost(), port, port + 1);
-			channelInit = new P2PChannelInitializer(localId.getClientId(), serialTable);
-			idTable = new SocketIdTable();
-			this.nextAssignableId = 0;
-			
-			initServer(port);
-			port++;
-			initUdp(port);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-			System.err.println("Unable to initialize local server.");
-		}
+		
+		this.localId = new SocketId(nextAssignableId++, InetAddress.getLocalHost(), port, port + 1);
+		
+		this.nextAssignableId = 0;
+		
+		initServer(port);
+		port++;
+		initUdp(port);
+		
 		
 	}
 	
@@ -74,7 +73,7 @@ public class NettyServer{
 		bootstrap.group(bossGroup, workerGroup)
 		.channel(NioServerSocketChannel.class)
 		.handler(new ServerBossChannelInitializer())
-		.childHandler(new ServerChannelInitializer(idTable, this, channelInit))
+		.childHandler(new ServerChannelInitializer(idTable, serialTable,  this))
 		.bind(port);
 	}
 	
@@ -84,14 +83,35 @@ public class NettyServer{
 		bootstrap.group(udpGroup)
 		.channel(NioDatagramChannel.class)
 		.option(ChannelOption.SO_BROADCAST, true)
-		.handler(new UdpChannelInitializer(idTable, channelInit));
+		.handler(new UdpChannelInitializer(idTable, serialTable,  this));
 		
-		bootstrap.bind(port);
+		try {
+			udpChannel = bootstrap.bind(port).sync().channel();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 	
-	public void setNextAssignableId(short next){
-		nextAssignableId = next;
+	public Channel getUdpChannel(){
+		return udpChannel;
+	}
+	
+	public SocketIdTable getIdTable(){
+		return idTable;
+	}
+	
+	public SerializingTable getSerialTable(){
+		return serialTable;
+	}
+	
+	public int getPort(){
+		return localId.getTcpAddress().getPort();
+	}
+	
+	public void setP2PNetwork(P2PNetwork network){
+		this.network = network;
 	}
 	
 	public short getNextAssignableId(){
@@ -107,14 +127,27 @@ public class NettyServer{
 	}
 	
 	public boolean attemptConnect(SocketId id, Password password){
+		if(network == null)//We are not connected to any network
+			return false;
+		
 		boolean canConnect = network.getNetworkInfo().canConnect(password);
 		if(!canConnect)
 			return false;
 		assert (connected); // local id should be defined
 			
 		idTable.identify(id.getTcpAddress(), nextAssignableId++ , id.getTcpAddress().getPort() + 1);
-		Peer peer = new Peer(id);
+		
+		return true;
+	}
+	
+	public boolean connect(NewConnection connection){
+		if(connection.getAuthentificatorId().hashCode() != connection.getSignature())
+			return false;
+		
+		Peer peer = new Peer(connection.getNewPeerId());
 		peer.join(network);
+		
+		nextAssignableId = connection.getNextClientId();
 		return true;
 	}
 }

@@ -1,6 +1,7 @@
 package com.p2p;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.SocketAddress;
 
@@ -25,6 +26,10 @@ public class Peer {
 	public Peer(SocketId id){
 		this.id = id;
 		connected = false;
+	}
+	
+	public Peer(InetSocketAddress address){
+		this(address.getAddress(), address.getPort());
 	}
 	
 	public Peer(InetAddress address, int port){
