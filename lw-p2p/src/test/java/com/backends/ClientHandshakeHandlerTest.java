@@ -15,12 +15,8 @@ public class ClientHandshakeHandlerTest implements HandshakeListener{
 	public ClientHandshakeHandlerTest(){
 		channel = new EmbeddedChannel(new ClientHandshakeHandler(this));
 	}
-	
-	@Test
-	public void test() {
-		fail("Not yet implemented");
-	}
 
+	@Test
 	public void peersRequestingNewConnections(ConnectionAnswer answer,
 			NewConnection thisConnection) {
 		assertTrue(answer != null);
@@ -28,11 +24,13 @@ public class ClientHandshakeHandlerTest implements HandshakeListener{
 		
 	}
 
+	@Test
 	public void connectionToNetworkSuccessful() {
 		// TODO Auto-generated method stub
 		
 	}
 
+	@Test
 	public void connectionToNetworkFailed() {
 		// TODO Auto-generated method stub
 		
