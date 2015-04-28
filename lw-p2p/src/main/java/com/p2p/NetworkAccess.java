@@ -1,13 +1,19 @@
 package com.p2p;
 
+import io.netty.channel.ChannelFuture;
+
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
+import com.backends.HandshakeListener;
+import com.backends.id.SocketId;
+import com.nativeMessages.ConnectionAnswer;
+import com.nativeMessages.NewConnection;
 import com.nativeMessages.Password;
 import com.p2p.serializing.SerializingTable;
 import com.p2p.serializing.SerializingTableBuilder;
 
-public class NetworkAccess{
+public class NetworkAccess implements HandshakeListener{
 	public static final short DEFAULT_MAX_PEERS = 16;
 	
 	public static enum ConnectionStatus{unconnected, connected, connectedAsHost};
@@ -41,8 +47,9 @@ public class NetworkAccess{
 		return this;
 	}
 	
-	public NetworkAccess connectToNetwork(InetSocketAddress networkTcpAddress){
-		return this;
+	public ChannelFuture connectToNetwork(InetSocketAddress networkTcpAddress){
+		//TODO return some type of promise
+		return null;
 	}
 	
 	private P2PNetwork initNetwork(String name, short maxPeers){
@@ -56,4 +63,22 @@ public class NetworkAccess{
 	public ConnectionStatus getStatus(){
 		return status;
 	}
+
+	public void peersRequestingNewConnections(ConnectionAnswer answer,
+			NewConnection thisConnection) {
+		network = new P2PNetwork(answer.getNetworkInformation());
+		server.setP2PNetwork(network);
+		
+	}
+	
+	public void connectionToNetworkSuccessful() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void connectionToNetworkFailed() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

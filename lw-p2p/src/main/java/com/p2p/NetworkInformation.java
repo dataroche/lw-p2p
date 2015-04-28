@@ -61,7 +61,7 @@ public class NetworkInformation {
 		connectedPeers += number;
 	}
 	
-	boolean isAcceptingConnections(){
+	public boolean isAcceptingConnections(){
 		return acceptingConnections;
 	}
 	

@@ -20,7 +20,7 @@ public class RawMessage {
 	ByteBuf buffer;
 	List<Object> objects;
 	
-	RawMessage(){
+	public RawMessage(){
 		objects = new LinkedList<Object>();
 	}
 	
@@ -38,5 +38,19 @@ public class RawMessage {
 	
 	public List<Object> getObjects(){
 		return objects;
+	}
+	
+	/**
+	 * Searches for the first instance of the objectType.
+	 * @param objectType The Class of the desired object.
+	 * @return The first object of type objectType found, or null if none were found.
+	 */
+	@SuppressWarnings("unchecked")
+	public <Type> Type searchFor(Class<Type> objectType){
+		for(Object o : getObjects()){
+			if(objectType.isInstance(o))
+				return (Type) o;
+		}
+		return null;
 	}
 }

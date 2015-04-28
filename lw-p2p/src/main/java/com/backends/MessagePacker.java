@@ -36,6 +36,12 @@ public class MessagePacker extends ChannelOutboundHandlerAdapter {
 		}
 	}
 	
+	@Override
+	public void flush(ChannelHandlerContext ctx) throws Exception {
+		if(!isCurrentRequestEmpty())
+			sendingRequest(ctx, new FlushRequest(), null);
+	}
+	
 	private void sendingRequest(ChannelHandlerContext ctx, FlushRequest request,
 			ChannelPromise promise) throws Exception, EmptyMessageRequestException{
 		if(isCurrentRequestEmpty())

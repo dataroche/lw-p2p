@@ -3,7 +3,7 @@ package com.backends;
 import com.backends.id.SocketIdTable;
 import com.p2p.NettyServer;
 import com.p2p.P2PNetwork;
-import com.p2p.serializing.UdpSerializingChannelHandler;
+import com.p2p.serializing.SerializingChannelHandler;
 import com.p2p.serializing.SerializingTable;
 
 import io.netty.channel.ChannelInitializer;
@@ -17,9 +17,9 @@ public class ServerChannelInitializer extends ChannelInitializer<NioServerSocket
 	private SerializingTable serialTable;
 	private NettyServer server;
 	
-	public ServerChannelInitializer(SocketIdTable idTable, SerializingTable serialTable, NettyServer server){
-		this.idTable = idTable;
-		this.serialTable = serialTable;
+	public ServerChannelInitializer(NettyServer server){
+		this.idTable = server.getIdTable();
+		this.serialTable = server.getSerialTable();
 		this.server = server;
 	}
 	
@@ -30,7 +30,7 @@ public class ServerChannelInitializer extends ChannelInitializer<NioServerSocket
 		//[I/O = ByteBuf]									// 	Network layer
 		.addLast(new TcpPacketHandler(idTable))				// 	Direction:\/|/\, 
 		//[/\ = 
-		.addLast(new UdpSerializingChannelHandler(serialTable))// 	Direction:\/|/\, Serializes and deserializes objects into the buffer stream.
+		.addLast(new SerializingChannelHandler(serialTable))// 	Direction:\/|/\, Serializes and deserializes objects into the buffer stream.
 		//[/\ = MessageRequest] [\/ = RawMessage] 
 		.addLast(new HandshakeHandler(server));				//Direction : \/, Intercepts ConnectionAttempt objects and discard others when not connected.
 		//[I/O = Objects]

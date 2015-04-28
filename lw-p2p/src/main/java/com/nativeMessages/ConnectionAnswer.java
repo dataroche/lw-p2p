@@ -1,5 +1,6 @@
 package com.nativeMessages;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.backends.id.SocketId;
@@ -17,7 +18,7 @@ import com.sun.org.apache.bcel.internal.generic.RETURN;
  */
 public class ConnectionAnswer {
 	public static enum Answer{
-		SUCCESS, INCORRECT_PASSWORD, NETWORK_FULL;
+		SUCCESS, FAILURE;
 	}
 	
 	private SocketId[] peerIds;
@@ -30,6 +31,17 @@ public class ConnectionAnswer {
 	
 	public void setPeerIds(SocketId ... ids){
 		peerIds = ids;
+	}
+	
+	public void setPeerIds(Iterable<SocketId> peers){
+		ArrayList<SocketId> tempPeers = new ArrayList<SocketId>();;
+		for(SocketId id : peers){
+			tempPeers.add(id);
+		}
+		this.peerIds = new SocketId[tempPeers.size()]; 
+		for(int i = 0; i < tempPeers.size(); i++){
+			peerIds[i] = tempPeers.get(i);
+		}
 	}
 	
 	public void setPeers(List<Peer> peers){

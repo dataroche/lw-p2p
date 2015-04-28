@@ -11,47 +11,78 @@ import io.netty.example.telnet.TelnetClientInitializer;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 import com.backends.ChannelMultiplexer;
 import com.backends.ClientChannelInitializer;
 import com.backends.FlushRequest;
+import com.backends.HandshakeListener;
 import com.backends.MessagePacker.EmptyMessageRequestException;
 import com.backends.id.SocketId;
 import com.nativeMessages.ConnectionAnswer;
 import com.nativeMessages.ConnectionAnswer.Answer;
+import com.nativeMessages.ConnectionAttempt;
+import com.nativeMessages.NewConnection;
 
-public class PeerClient extends Peer {
+public class PeerClient extends Peer{
 
 	private ChannelMultiplexer mux;
+	
+	private ArrayList<Peer> connectedPeers;
 	
 	private NettyServer server;
 	
 	public PeerClient(NettyServer localServer) throws UnknownHostException {
 		super(InetAddress.getLocalHost(), localServer.getPort());
+		mux = new ChannelMultiplexer();
+		connectedPeers = new ArrayList<Peer>();
 		this.server = localServer;
 	}
 	
-	public Peer connectToRemotePeerSync(InetSocketAddress address){
-		SocketId id = server.getIdTable().getID(address);
-		EventLoopGroup group = new NioEventLoopGroup();
-		Peer peer = new Peer(id);
+	public boolean connectToRemoteNetworkSync(InetSocketAddress address, ConnectionAttempt attempt){
+		//TODO connect to remote peer, send connection attempt, 
+		//wait for answer, send out new connections and return, all sync.
+		Peer firstPeer = connectToRemotePeerSync(address);
 		try {
-			Channel c = bootstrap(address, group).sync().channel();
-			mux.addChannel(peer, c);
+			writeAndFlushTo(attempt, firstPeer).await();
 		} catch (InterruptedException e) {
-			return null;
-		} 
-		return peer;
+			return false;
+		}
+		return true;
 	}
 	
-	public boolean connectToRemoteNetworkSync(InetSocketAddress address){
-		//TODO connect to remote peer, send connection attempt, wait for answer, send out new connections and return, all sync.
+	private void waitForAnswer(){
+		
 	}
 	
-	public void connectionAnswerReceived(ConnectionAnswer answer){
+	private void connectionAnswerReceived(ConnectionAnswer answer){
 		if(answer.getAnswer() == Answer.SUCCESS){
 			SocketId[] ids = answer.getPeerIds();
 		}
+	}
+	
+	public Peer createPeer(InetSocketAddress address){
+		SocketId id = server.getIdTable().getID(address);
+		return createPeer(id);
+	}
+	
+	public Peer createPeer(SocketId id){
+		Peer peer = new Peer(id);
+		connectedPeers.add(peer);
+		return peer;
+	}
+	
+	public Peer[] createPeers(SocketId ... id){
+		Peer[] peers = new Peer[id.length];
+		for(int i = 0; i < id.length; i++){
+			peers[i] = createPeer(id[i]);
+		}
+		return peers;
+	}
+	
+	public ChannelFuture connectToRemotePeer(Peer peer){
+		EventLoopGroup group = new NioEventLoopGroup();
+		return bootstrap(peer.getSocketId().getTcpAddress(), group);
 	}
 	
 	private ChannelFuture bootstrap(InetSocketAddress address, EventLoopGroup group){
@@ -77,9 +108,9 @@ public class PeerClient extends Peer {
 		flush();
 	}
 	
-	public void writeTo(Object o, Peer destination){
+	public ChannelFuture writeTo(Object o, Peer destination){
 		Channel c = getSpecificChannel(destination);
-		c.write(o);
+		return c.write(o);
 	}
 	
 	private Channel getSpecificChannel(Peer destination){
@@ -92,9 +123,10 @@ public class PeerClient extends Peer {
 		c.flush();
 	}
 	
-	public void writeAndFlushTo(Object o, Peer destination){
-		writeTo(o, destination);
+	public ChannelFuture writeAndFlushTo(Object o, Peer destination){
+		ChannelFuture future = writeTo(o, destination);
 		flushTo(destination);
+		return future;
 	}
 	
 }

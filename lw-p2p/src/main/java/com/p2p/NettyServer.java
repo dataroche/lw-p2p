@@ -47,6 +47,21 @@ public class NettyServer{
 	private Channel udpChannel;
 	
 	
+	/**
+	 * Used for tests only.
+	 * @throws UnknownHostException 
+	 */
+	public NettyServer(P2PNetwork testNetwork, int port) throws UnknownHostException{
+		idTable = new SocketIdTable();
+		connected = false;
+		this.serialTable = new SerializingTable();
+		network = testNetwork;
+		
+		this.localId = new SocketId(nextAssignableId++, InetAddress.getLocalHost(), port, port + 1);
+		
+		this.nextAssignableId = 0;
+	}
+	
 	public NettyServer(int port, SerializingTable serialTable) throws UnknownHostException{
 		bossGroup = new NioEventLoopGroup();
 		workerGroup = new NioEventLoopGroup();
@@ -73,7 +88,7 @@ public class NettyServer{
 		bootstrap.group(bossGroup, workerGroup)
 		.channel(NioServerSocketChannel.class)
 		.handler(new ServerBossChannelInitializer())
-		.childHandler(new ServerChannelInitializer(idTable, serialTable,  this))
+		.childHandler(new ServerChannelInitializer(this))
 		.bind(port);
 	}
 	
@@ -110,7 +125,7 @@ public class NettyServer{
 		return localId.getTcpAddress().getPort();
 	}
 	
-	public void setP2PNetwork(P2PNetwork network){
+	void setP2PNetwork(P2PNetwork network){
 		this.network = network;
 	}
 	
@@ -124,6 +139,10 @@ public class NettyServer{
 	
 	public SocketId getThisId(){
 		return localId;
+	}
+	
+	public P2PNetwork getNetwork(){
+		return network;
 	}
 	
 	public boolean attemptConnect(SocketId id, Password password){

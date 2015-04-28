@@ -25,6 +25,11 @@ public class P2PNetwork {
 		listeners = new ArrayList<P2PNetworkListener>();
 	}
 	
+	P2PNetwork(NetworkInformation info){
+		this();
+		setNetworkInfo(info);
+	}
+	
 	public void broadcast(Object... objects){
 		for(Object o : objects)
 			broadcast(o);

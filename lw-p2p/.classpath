@@ -6,6 +6,5 @@
 	<classpathentry kind="src" path="src/test/resources"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="con" path="org.springsource.ide.eclipse.gradle.classpathcontainer"/>
-	<classpathentry kind="lib" path="C:/RWorkSpace/NetworkSandbox/libraries/netty-example-4.0.26.Final.jar" sourcepath="C:/RWorkSpace/NetworkSandbox/libraries/netty-example-4.0.26.Final-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

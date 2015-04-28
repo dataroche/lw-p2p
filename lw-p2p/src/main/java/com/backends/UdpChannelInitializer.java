@@ -2,7 +2,7 @@ package com.backends;
 
 import com.backends.id.SocketIdTable;
 import com.p2p.NettyServer;
-import com.p2p.serializing.UdpSerializingChannelHandler;
+import com.p2p.serializing.SerializingChannelHandler;
 import com.p2p.serializing.SerializingTable;
 
 import io.netty.channel.ChannelInitializer;
@@ -27,7 +27,7 @@ public class UdpChannelInitializer extends ChannelInitializer<NioDatagramChannel
 		//[I/O = DatagramPacket]							// 	Network layer		
 		.addLast(new UdpPacketHandler(idTable))				// 	Direction:\/|/\, Creates and unpacks DatagramPacket, and appends useful info.
 		//[/\ = MessageRequest] [\/ = RawMessage] 
-		.addLast(new UdpSerializingChannelHandler(serialTable))// 	Direction:\/|/\, Serializes and deserializes objects into the buffer stream.
+		.addLast(new SerializingChannelHandler(serialTable))// 	Direction:\/|/\, Serializes and deserializes objects into the buffer stream.
 		//[/\ = MessageRequest] [\/ = Objects] 
 		.addLast(new MessageRequestIdAppender(clientId))	//  Direction:/\, Appends the local client id to the message request.
 		//[/\ = MessageRequest] [\/ = Objects] 

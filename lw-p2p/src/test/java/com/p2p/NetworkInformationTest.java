@@ -12,10 +12,10 @@ public class NetworkInformationTest {
 	
 	@Test
 	public void noPassword(){
-		NetworkInformation info = new NetworkInformation(name, 16, true, 0);
-		verify(info, name, 16, 0, true, 0);
+		NetworkInformation info = new NetworkInformation(name, (short) 16);
+		verify(info, name, 16, 0);
 		info.addPeer();
-		verify(info, name, 16, 1, true, 0);
+		verify(info, name, 16, 1);
 		//Should be able to connect
 		assertTrue(info.canConnect());
 		
@@ -32,14 +32,14 @@ public class NetworkInformationTest {
 		info.setAcceptingConnections(true);
 		assertFalse(info.canConnect());
 		
-		verify(info, name, 16, 1+16, true, 0);
+		verify(info, name, 16, 1+16);
 	}
 	
 	@Test
 	public void withPassword(){
 		Password password = new Password("foofoo");
 		Password anotherPassword = new Password("foo");
-		NetworkInformation info = new NetworkInformation(name, 16, true, 0, password);
+		NetworkInformation info = new NetworkInformation(name, (short)16, password);
 		
 		assertTrue(info.canConnect(password));
 		assertFalse(info.canConnect(anotherPassword));
@@ -60,11 +60,9 @@ public class NetworkInformationTest {
 	}
 	
 	private void verify(NetworkInformation info, String requiredName
-			, int maxPeers, int connectedPeers, boolean host, int hostID){
+			, int maxPeers, int connectedPeers){
 		assertEquals(requiredName, info.getName());
 		assertEquals(maxPeers, info.getMaxConnectedPeers());
 		assertEquals(connectedPeers, info.getConnectedPeers());
-		assertEquals(host, info.isHost());
-		assertEquals(hostID, info.getHostID());
 	}
 }

@@ -10,11 +10,11 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 
-public class UdpSerializingChannelHandler extends ChannelDuplexHandler{
+public class SerializingChannelHandler extends ChannelDuplexHandler{
 
 	private SerializingTable serialTable;
 	
-	public UdpSerializingChannelHandler(SerializingTable table){
+	public SerializingChannelHandler(SerializingTable table){
 		serialTable = table;
 	}
 
