@@ -6,7 +6,7 @@ import com.nativeMessages.NewConnection;
 import com.p2p.NetworkInformation;
 
 public interface HandshakeListener {
-	public void peersRequestingNewConnections(ConnectionAnswer answer, NewConnection thisConnection);
-	public void connectionToNetworkSuccessful();
-	public void connectionToNetworkFailed();
+	public void connectionAccepted(NetworkInformation info);
+	public void connectionSuccessful();
+	public void connectionFailed();
 }

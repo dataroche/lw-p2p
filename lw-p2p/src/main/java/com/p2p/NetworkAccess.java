@@ -63,20 +63,31 @@ public class NetworkAccess implements HandshakeListener{
 	public ConnectionStatus getStatus(){
 		return status;
 	}
+	
+	public PeerClient getClient() {
+		return client;
+	}
 
-	public void peersRequestingNewConnections(ConnectionAnswer answer,
-			NewConnection thisConnection) {
-		network = new P2PNetwork(answer.getNetworkInformation());
+	public NettyServer getServer() {
+		return server;
+	}
+
+	public P2PNetwork getNetwork() {
+		return network;
+	}
+
+	public void connectionAccepted(NetworkInformation info) {
+		network = new P2PNetwork(info);
 		server.setP2PNetwork(network);
 		
 	}
 	
-	public void connectionToNetworkSuccessful() {
+	public void connectionSuccessful() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void connectionToNetworkFailed() {
+	public void connectionFailed() {
 		// TODO Auto-generated method stub
 		
 	}

@@ -15,7 +15,6 @@ import java.util.ArrayList;
 
 import com.backends.ChannelMultiplexer;
 import com.backends.ClientChannelInitializer;
-import com.backends.FlushRequest;
 import com.backends.HandshakeListener;
 import com.backends.MessagePacker.EmptyMessageRequestException;
 import com.backends.id.SocketId;
@@ -23,6 +22,7 @@ import com.nativeMessages.ConnectionAnswer;
 import com.nativeMessages.ConnectionAnswer.Answer;
 import com.nativeMessages.ConnectionAttempt;
 import com.nativeMessages.NewConnection;
+import com.nativeRequests.FlushRequest;
 
 public class PeerClient extends Peer{
 

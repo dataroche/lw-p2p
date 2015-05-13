@@ -49,6 +49,20 @@ public class ClientHandshakeHandlerTest implements HandshakeListener{
 	
 	@Test
 	public void successfulConnectionWithNewConnection(){
+		
+		//No peers in the network, the connection should be successful.
+		expectingAnswer = true;
+		expectingSuccess = true;
+		expectingFailure = false;
+		simplePositiveAnswer();
+		
+		if(!passedAnswer)
+			fail("Did not contact listener after new connections");
+		
+		
+	}
+	
+	private void simplePositiveAnswer(){
 		ConnectionAnswer answer = new ConnectionAnswer(Answer.SUCCESS);
 		answer.setNetworkInformation(info);
 		
@@ -57,30 +71,20 @@ public class ClientHandshakeHandlerTest implements HandshakeListener{
 		
 		list.add(answer);
 		list.add(connection);
-		
-		connectionToMatch = connection;
-		answerToMatch = answer;
-		
-		expectingAnswer = true;
-		expectingSuccess = true;
-		expectingFailure = false;
 		channel.writeInbound(message);
-		
-		if(!passedAnswer)
-			fail("Did not contact listener after new connections");
-		
-		
 	}
 	
 	@Test
 	public void contactsAfterReceivingAllWelcomes(){
-		addPeersToNetwork(1);//one fake peer, will expect one welcome.
-		successfulConnectionWithNewConnection();
+		addPeersToNetwork(1);//one fake peer, will expect one welcome, so the connection will not be immediately successful
+		simplePositiveAnswer();
+		
 		RawMessage message = new RawMessage();
 		message.objects = list;
 		
 		list.clear();
 		list.add(new NetworkWelcome());
+		
 		expectingAnswer = false;
 		expectingSuccess = true;
 		expectingFailure = false;
@@ -90,19 +94,13 @@ public class ClientHandshakeHandlerTest implements HandshakeListener{
 			fail("Expecting the success of the connection, since only 1 peer is connected to the network.");
 	}
 	
-	private NewConnection connectionToMatch;
-	private ConnectionAnswer answerToMatch;
+	
 	private boolean expectingAnswer;
 	private boolean passedAnswer = false;
 
-	public void peersRequestingNewConnections(ConnectionAnswer answer,
-			NewConnection thisConnection) {
+	public void connectionAccepted(NetworkInformation info) {
 		if(expectingAnswer){
-			assertTrue(answer != null);
-			assertTrue(answer.getNetworkInformation() != null);
-			
-			assertTrue(answerToMatch == answer);
-			assertTrue(thisConnection == connectionToMatch);
+			assertTrue(info != null);
 		}
 		else
 			fail("No action was expected.");
@@ -113,7 +111,7 @@ public class ClientHandshakeHandlerTest implements HandshakeListener{
 
 	private boolean expectingSuccess;
 	private boolean passedSuccess = false;
-	public void connectionToNetworkSuccessful() {
+	public void connectionSuccessful() {
 		if(!expectingSuccess)
 			fail("Success not expected.");
 		
@@ -122,7 +120,7 @@ public class ClientHandshakeHandlerTest implements HandshakeListener{
 
 	private boolean expectingFailure;
 	private boolean passedFailure = false;
-	public void connectionToNetworkFailed() {
+	public void connectionFailed() {
 		if(!expectingSuccess)
 			fail("Failure not expected.");
 		

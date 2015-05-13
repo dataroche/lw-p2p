@@ -15,7 +15,16 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
  * Searches for {@link ConnectionAnswer}<br>
  * if found -><br>
  * Checks for connection success<br>
- * Notifies the sole listener of the answer<br>
+ * if successful -><br>
+ * Writes a ConnectionBroadcastRequest<br>
+ * <p>
+ * Searches for {@link NetworkWelcome}<br>
+ * if found -><br>
+ * Increments a counter until all peers have accepted connection, and notifies of the success.<br>
+ * <p>
+ * Notifies of a connection failure under either of these circumstances :<br>
+ * 1- The connection answer is negative, or<br>
+ * 2- One or more peers have failed to answer to the connection request after a certain timeout.
  * 
  * 
  * 
@@ -54,10 +63,10 @@ public class ClientHandshakeHandler extends ChannelInboundHandlerAdapter {
 			return;
 		Answer connectionSuccess = answer.getAnswer();
 		if(connectionSuccess != Answer.SUCCESS)
-			soleListener.connectionToNetworkFailed();
+			soleListener.connectionFailed();
 		else{
 			NewConnection connection = msg.searchFor(NewConnection.class);
-			soleListener.peersRequestingNewConnections(answer, connection);
+			soleListener.connectionAccepted(answer.getNetworkInformation());
 			receivedInformation = answer.getNetworkInformation();
 		}
 	}
@@ -67,6 +76,11 @@ public class ClientHandshakeHandler extends ChannelInboundHandlerAdapter {
 		return false;
 	}
 	
+	/**Network welcome counter, to make sure everyone on the network accepted the connection
+	 * 
+	 * @author WILL
+	 *
+	 */
 	private class ConnectionCounter{
 		int count = 0;
 		int objective;

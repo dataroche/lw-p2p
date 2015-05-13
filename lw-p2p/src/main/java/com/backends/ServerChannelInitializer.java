@@ -32,6 +32,8 @@ public class ServerChannelInitializer extends ChannelInitializer<NioServerSocket
 		//[/\ = 
 		.addLast(new SerializingChannelHandler(serialTable))// 	Direction:\/|/\, Serializes and deserializes objects into the buffer stream.
 		//[/\ = MessageRequest] [\/ = RawMessage] 
+		.addLast(new MessagePacker())
+		//[I/O = Objects]
 		.addLast(new HandshakeHandler(server));				//Direction : \/, Intercepts ConnectionAttempt objects and discard others when not connected.
 		//[I/O = Objects]
 		

@@ -1,5 +1,7 @@
 package com.backends;
 
+import com.nativeRequests.FlushRequest;
+
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOutboundHandlerAdapter;
 import io.netty.channel.ChannelPromise;

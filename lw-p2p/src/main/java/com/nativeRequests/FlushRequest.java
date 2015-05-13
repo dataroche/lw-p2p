@@ -1,4 +1,4 @@
-package com.backends;
+package com.nativeRequests;
 
 public class FlushRequest {
 	private short[] destinationIDs;
