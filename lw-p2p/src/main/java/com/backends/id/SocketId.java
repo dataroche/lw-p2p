@@ -4,7 +4,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 public class SocketId {
-	public static enum Status{UNRESOLVED, IDENTIFY_PENDING, IDENTIFIED}
+	public static enum Status{INVALID, UNRESOLVED, IDENTIFY_PENDING, IDENTIFIED}
 	
 	long addedTimeStamp;
 	Status idStatus;
@@ -12,6 +12,10 @@ public class SocketId {
 	short clientId;
 	InetSocketAddress udpAddress;
 	InetSocketAddress tcpAddress;
+	
+	public SocketId(){
+		idStatus = Status.INVALID;
+	}
 	
 	public SocketId(short id, InetAddress ipAddress, int tcpPort, int udpPort){
 		name = "" + clientId;
@@ -53,8 +57,10 @@ public class SocketId {
 	
 	@Override
 	public int hashCode() {
-		
-		return udpAddress.hashCode() + tcpAddress.hashCode() + 7 * clientId;
+		int hash = 666;
+		if(idStatus != Status.INVALID)
+			hash = udpAddress.hashCode() + tcpAddress.hashCode() + 7 * clientId;
+		return hash;
 	}
 	
 	@Override

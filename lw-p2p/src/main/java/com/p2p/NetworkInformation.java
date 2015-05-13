@@ -22,7 +22,7 @@ public class NetworkInformation {
 	private boolean passwordProtected;
 	private Password password;
 	
-	NetworkInformation(String name, short maxPeers){
+	public NetworkInformation(String name, short maxPeers){
 		this.name = name;
 		this.maxConnectedPeers = maxPeers;
 		this.acceptingConnections = true;
@@ -30,7 +30,7 @@ public class NetworkInformation {
 		setWithNoPassword();
 	}
 	
-	NetworkInformation(String name, short maxPeers, Password password){
+	public NetworkInformation(String name, short maxPeers, Password password){
 		this(name, maxPeers);
 		setPassword(password);
 	}

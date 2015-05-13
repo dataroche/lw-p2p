@@ -9,6 +9,19 @@ import com.p2p.NetworkInformation;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
+/**
+ * Handler overview : <br>
+ * Reads in {@link RawMessage}.<br>
+ * Searches for {@link ConnectionAnswer}<br>
+ * if found -><br>
+ * Checks for connection success<br>
+ * Notifies the sole listener of the answer<br>
+ * 
+ * 
+ * 
+ * @author WILL
+ *
+ */
 public class ClientHandshakeHandler extends ChannelInboundHandlerAdapter {
 	
 	public static enum HandshakeStatus{pending, acknowledgePending, completed};
@@ -52,5 +65,19 @@ public class ClientHandshakeHandler extends ChannelInboundHandlerAdapter {
 	@Override
 	public boolean isSharable() {
 		return false;
+	}
+	
+	private class ConnectionCounter{
+		int count = 0;
+		int objective;
+		
+		private ConnectionCounter(){
+			
+		}
+		
+		private boolean increment(){
+			count++;
+		}
+		
 	}
 }

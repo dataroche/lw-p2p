@@ -1,39 +1,132 @@
 package com.backends;
 
 import static org.junit.Assert.*;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Locale;
+
 import io.netty.channel.embedded.EmbeddedChannel;
 
 import org.junit.Test;
 
+import com.backends.id.SocketId;
 import com.nativeMessages.ConnectionAnswer;
+import com.nativeMessages.ConnectionAnswer.Answer;
+import com.nativeMessages.NetworkWelcome;
 import com.nativeMessages.NewConnection;
+import com.p2p.NetworkInformation;
 
 public class ClientHandshakeHandlerTest implements HandshakeListener{
 
 	private EmbeddedChannel channel;
+	private ClientHandshakeHandler handler = new ClientHandshakeHandler(this);
+	private NetworkInformation info = new NetworkInformation("Bob", (short) 16);
+	
+	
+	private NewConnection connection = new NewConnection(new SocketId(), new SocketId(), new SocketId().hashCode(), (short) 1);
+	
+	private ArrayList<Object> list = new ArrayList<Object>();
 	
 	public ClientHandshakeHandlerTest(){
-		channel = new EmbeddedChannel(new ClientHandshakeHandler(this));
+		channel = new EmbeddedChannel(handler);
 	}
-
+	
+	private void addPeersToNetwork(int count){
+		String methodName = "addPeer";
+		try {
+			Method m = NetworkInformation.class.getDeclaredMethod(methodName, int.class);
+			m.setAccessible(true);
+			m.invoke(info, count);
+		} catch (IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException | NoSuchMethodException
+				| SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	@Test
+	public void successfulConnectionWithNewConnection(){
+		ConnectionAnswer answer = new ConnectionAnswer(Answer.SUCCESS);
+		answer.setNetworkInformation(info);
+		
+		RawMessage message = new RawMessage();
+		message.objects = list;
+		
+		list.add(answer);
+		list.add(connection);
+		
+		connectionToMatch = connection;
+		answerToMatch = answer;
+		
+		expectingAnswer = true;
+		expectingSuccess = true;
+		expectingFailure = false;
+		channel.writeInbound(message);
+		
+		if(!passedAnswer)
+			fail("Did not contact listener after new connections");
+		
+		
+	}
+	
+	@Test
+	public void contactsAfterReceivingAllWelcomes(){
+		addPeersToNetwork(1);//one fake peer, will expect one welcome.
+		successfulConnectionWithNewConnection();
+		RawMessage message = new RawMessage();
+		message.objects = list;
+		
+		list.clear();
+		list.add(new NetworkWelcome());
+		expectingAnswer = false;
+		expectingSuccess = true;
+		expectingFailure = false;
+		channel.writeInbound(message);
+		
+		if(!passedSuccess)
+			fail("Expecting the success of the connection, since only 1 peer is connected to the network.");
+	}
+	
+	private NewConnection connectionToMatch;
+	private ConnectionAnswer answerToMatch;
+	private boolean expectingAnswer;
+	private boolean passedAnswer = false;
+
 	public void peersRequestingNewConnections(ConnectionAnswer answer,
 			NewConnection thisConnection) {
-		assertTrue(answer != null);
-		assertTrue(answer.getNetworkInformation() != null);
+		if(expectingAnswer){
+			assertTrue(answer != null);
+			assertTrue(answer.getNetworkInformation() != null);
+			
+			assertTrue(answerToMatch == answer);
+			assertTrue(thisConnection == connectionToMatch);
+		}
+		else
+			fail("No action was expected.");
+		
+		passedAnswer = true;
 		
 	}
 
-	@Test
+	private boolean expectingSuccess;
+	private boolean passedSuccess = false;
 	public void connectionToNetworkSuccessful() {
-		// TODO Auto-generated method stub
+		if(!expectingSuccess)
+			fail("Success not expected.");
 		
+		passedSuccess = true;
 	}
 
-	@Test
+	private boolean expectingFailure;
+	private boolean passedFailure = false;
 	public void connectionToNetworkFailed() {
-		// TODO Auto-generated method stub
+		if(!expectingSuccess)
+			fail("Failure not expected.");
 		
+		passedFailure = true;
 	}
 
 }
