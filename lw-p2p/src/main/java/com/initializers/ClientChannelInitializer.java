@@ -1,11 +1,11 @@
-package com.backends;
+package com.initializers;
 
-import com.backends.id.SocketIdTable;
-import com.p2p.NettyServer;
+import com.backends.ClientHandshakeHandler;
+import com.backends.MessagePacker;
+import com.backends.TcpPacketHandler;
 import com.p2p.NetworkAccess;
 import com.p2p.serializing.SerializingChannelHandler;
 
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;
 

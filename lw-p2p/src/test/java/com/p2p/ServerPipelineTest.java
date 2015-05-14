@@ -7,11 +7,11 @@ import java.util.Queue;
 
 import org.junit.Test;
 
-import com.backends.ClientChannelInitializer;
 import com.backends.HandshakeHandler;
 import com.backends.RawMessage;
-import com.backends.ServerChannelInitializer;
 import com.backends.TcpTestingPipeline;
+import com.initializers.ClientChannelInitializer;
+import com.initializers.ServerChannelInitializer;
 import com.nativeMessages.ConnectionAnswer;
 import com.nativeMessages.ConnectionAnswer.Answer;
 import com.nativeMessages.ConnectionAttempt;

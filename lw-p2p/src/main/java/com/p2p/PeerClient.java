@@ -6,7 +6,6 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.example.telnet.TelnetClientInitializer;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -14,10 +13,10 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import com.backends.ChannelMultiplexer;
-import com.backends.ClientChannelInitializer;
 import com.backends.HandshakeListener;
 import com.backends.MessagePacker.EmptyMessageRequestException;
 import com.backends.id.SocketId;
+import com.initializers.ClientChannelInitializer;
 import com.nativeMessages.ConnectionAnswer;
 import com.nativeMessages.ConnectionAnswer.Answer;
 import com.nativeMessages.ConnectionAttempt;

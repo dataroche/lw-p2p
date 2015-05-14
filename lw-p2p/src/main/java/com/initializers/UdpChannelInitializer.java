@@ -1,12 +1,14 @@
-package com.backends;
+package com.initializers;
 
+import com.backends.MessagePacker;
+import com.backends.MessageRequestIdAppender;
+import com.backends.UdpPacketHandler;
 import com.backends.id.SocketIdTable;
 import com.p2p.NettyServer;
 import com.p2p.serializing.SerializingChannelHandler;
 import com.p2p.serializing.SerializingTable;
 
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 
 public class UdpChannelInitializer extends ChannelInitializer<NioDatagramChannel>{
@@ -15,10 +17,10 @@ public class UdpChannelInitializer extends ChannelInitializer<NioDatagramChannel
 	private SocketIdTable idTable;
 	private SerializingTable serialTable;
 	
-	public UdpChannelInitializer(SocketIdTable idTable, SerializingTable serialTable, NettyServer server){
-		this.idTable = idTable;
+	public UdpChannelInitializer(NettyServer server){
+		this.idTable = server.getIdTable();
 		this.clientId = server.getThisId().getClientId();
-		this.serialTable = serialTable;
+		this.serialTable = server.getSerialTable();
 	}
 	
 	@Override

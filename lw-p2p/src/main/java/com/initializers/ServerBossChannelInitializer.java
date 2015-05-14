@@ -1,4 +1,4 @@
-package com.backends;
+package com.initializers;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.nio.NioServerSocketChannel;

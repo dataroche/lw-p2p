@@ -51,6 +51,7 @@ public class MessagePacker extends ChannelOutboundHandlerAdapter {
 		
 		currentRequest.setDestinationIDs(request.getDestinationIDs());
 		ctx.writeAndFlush(currentRequest, promise);
+		currentRequest = null;
 		
 	}
 	

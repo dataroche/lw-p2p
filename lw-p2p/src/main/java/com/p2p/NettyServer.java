@@ -3,11 +3,11 @@ package com.p2p;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import com.backends.ServerBossChannelInitializer;
-import com.backends.ServerChannelInitializer;
-import com.backends.UdpChannelInitializer;
 import com.backends.id.SocketId;
 import com.backends.id.SocketIdTable;
+import com.initializers.ServerBossChannelInitializer;
+import com.initializers.ServerChannelInitializer;
+import com.initializers.UdpChannelInitializer;
 import com.nativeMessages.NewConnection;
 import com.nativeMessages.Password;
 import com.p2p.serializing.SerializingTable;
@@ -82,6 +82,8 @@ public class NettyServer{
 		
 		
 	}
+	
+	void setNetworkAccess(NetworkAccess access)
 	
 	private void initServer(int port){
 		ServerBootstrap bootstrap = new ServerBootstrap();

@@ -1,14 +1,14 @@
-package com.backends;
+package com.initializers;
 
+import com.backends.HandshakeHandler;
+import com.backends.MessagePacker;
+import com.backends.TcpPacketHandler;
 import com.backends.id.SocketIdTable;
 import com.p2p.NettyServer;
-import com.p2p.P2PNetwork;
 import com.p2p.serializing.SerializingChannelHandler;
 import com.p2p.serializing.SerializingTable;
 
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 public class ServerChannelInitializer extends ChannelInitializer<NioServerSocketChannel>{
